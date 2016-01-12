@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Metry oAuth Connect Demo </title>
+
+    <link rel="stylesheet" href="http://app.metry.io/login-register-oauth/css/app.css">
+    <style>
+        .metry-connect-button {
+            color: white;
+            background-color: #d12936;
+            display: inline-block;
+            border: 1px solid #bc2530;
+            border-radius: 4px;
+            padding: 2px 10px;
+            height: 30px;
+            font-size: 12px;
+            font-weight: normal;
+            text-transform: uppercase;
+            text-decoration: none;
+            line-height: 26px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .metry-connect-button:hover {
+            color: #fff;
+            background-color: #bc2530;
+        }
+
+        table td, table th {
+            padding:5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div style="max-width:600px;margin:0 auto;padding:20px;text-align: center;">
+
+        <!-- Metry oAuth Connect button -->
+        <a href="#" data-metry="authenticate" class="metry-connect-button">Connect to Metry</a>
+
+        <br><br>
+
+        <!-- Results debugging -->
+        <table width="100%" style="font-size:13px;border:1px solid #333;" border="1">
+            <tr>
+                <th width="40%">ClientId</th>
+                <td>demoapp</td>
+            </tr>
+            <tr>
+                <th>ClientSecret</th>
+                <td>demopass</td>
+            </tr>
+            <tr>
+                <th>RefreshToken</th>
+                <td><span id="refreshToken"><em>Press the <strong>Connect to Metry</strong> button to get started</em></span></td>
+            </tr>
+            <tr>
+                <th>AccessToken</th>
+                <td><span id="accessToken"></span></td>
+            </tr>
+            <tr>
+                <th>AccessToken expires</th>
+                <td><span id="tokenExpires"></span></td>
+            </tr>
+        </table>
+
+        <br><br>
+
+        <a href="#" id="refreshAccessToken" class="metry-connect-button" style="display:none;">Get new access token from Refresh_Token</a>
+    </div>
+
+
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="metry-oauth-connect.js"></script>
+    <script>
+        // Initiate MetryoAuthConnect
+        var metry = new MetryoAuthConnect({
+            clientSecret : 'demopass',
+            clientId     : 'demoapp',
+            redirectUri  : location.origin + location.pathname,
+            onSuccess    : function(token) {
+                console.info('Got the Metry oAuth tokens!');
+                console.info(token);
+            }
+        });
+
+        // Listening for callbacks:
+        $(function() {
+            var refreshToken = null;
+
+            /**
+             * The "Metry:GotToken" event will be triggered once we receive a token after the
+             * authentication popup. You can also use the 'onSuccess' callback.
+             */
+            $(document).on('Metry:GotToken', function(e, token) {
+                $('#refreshToken').html(token.refresh_token);
+                $('#accessToken').html(token.access_token);
+
+                var expire = new Date((new Date()).getTime() + (parseInt(token.expires_in)*1000));
+                $('#tokenExpires').html(expire.toISOString());
+
+                // Set the refresh token, so we can demo the refreshAccessToken
+                refreshToken = token.refresh_token;
+
+                // Show the refresh button
+                $('#refreshAccessToken').show();
+            });
+
+
+            /**
+             * Make sure you store the refresh_token.
+             * It can be used to get new access tokens.
+             * Access tokens expire after 3600 seconds
+             */
+            $('#refreshAccessToken').on('click', function() {
+               metry.fetchAccessToken(refreshToken)
+                   .done(function(res) {
+                       alert('New access_token: ' + res.access_token);
+
+                       $('#accessToken').html(res.access_token);
+
+                       var expire = new Date((new Date()).getTime() + (parseInt(res.expires_in)*1000));
+                       $('#tokenExpires').html(expire.toISOString());
+                   });
+            });
+        })
+    </script>
+</body>
+</html>
