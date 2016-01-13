@@ -2,7 +2,7 @@
 A javascript library for connecting to Metry user's consumption data via OAuth 2.0
 
 ## Demo
-There is a demo available where you can test the button <a href="http://metry-oauth-connect-demo.s3-website-eu-west-1.amazonaws.com/">test the button</a>. Use your own Metry-account to approve access. If you don't have one you can register at https://metry.io
+There is a demo available where you can <a href="http://metry-oauth-connect-demo.s3-website-eu-west-1.amazonaws.com/">test the button</a>. Use your own Metry-account to approve access. If you don't have one you can register at https://metry.io
 
 ## Configuration
 ```
