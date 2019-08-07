@@ -72,7 +72,6 @@ MetryoAuthConnect.prototype.fetchAccessToken = function fetchAccessToken(refresh
  */
 MetryoAuthConnect.prototype.authorizeUrl = function authorizeUrl() {
     var params = {
-        client_secret: this.authConfig.clientSecret,
         client_id: this.authConfig.clientId,
         redirect_uri: this.authConfig.redirectUri,
         grant_type: 'authorization_code',
